@@ -1,0 +1,7 @@
+transformers
+gradio
+langchain
+langchain_community
+sentence-transformers
+faiss-cpu
+chardet
