@@ -51,7 +51,7 @@ The scripts `llama-RAG.py` and `llama-RAG-gradio.py` extend the LLaMA model's ca
     - `--chunk_overlap`: Overlap size between text chunks (optional).
 
 - **Batch Processing with RAG (llama-RAG.py):**
-  - This script processes a batch of input questions, retrieves relevant documents from the vector database, and generates responses.
+  - This script processes a batch of input questions, retrieves relevant documents from the vector database, and generates responses. You can ask for the documents from which the information was extracted.
   - Parameters:
     - `--input`: Path to the input file containing questions.
     - `--output`: Path to the output file to save responses.
@@ -59,11 +59,21 @@ The scripts `llama-RAG.py` and `llama-RAG-gradio.py` extend the LLaMA model's ca
     - `--passes`: Number of passes over the input questions (optional).
 
 - **Web Interface with RAG (llama-RAG-gradio.py):**
-  - This script provides a web-based interface using Gradio for RAG. It retrieves relevant documents from the vector database and generates responses based on them.
+  - This script provides a web-based interface using Gradio for RAG. It retrieves relevant documents from the vector database and generates responses based on them. You can ask for the documents from which the information was extracted.
   - You can adjust model parameters and the number of chunks to retrieve through the Gradio interface.
 
 
 ## Install requirements
+
+Create a new enviroment and active it
+
+```bash
+python -m venv .venv
+.venv/scripts/activate (windows)
+source .venv/bin/activate (linux)
+```
+
+Install requirements
 
 ```bash
 pip install -r requirements.txt

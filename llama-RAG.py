@@ -70,13 +70,22 @@ def get_related_docs(query, top_k=5):
     D, I = index.search(query_embedding, top_k)
     
     # Retrieve the texts of the most similar documents
-    related_docs = [id_to_text[i] for i in I[0]]
+    related_docs = [
+        {
+            "content": id_to_text[i]['content'],
+            "file_name": id_to_text[i]['file_name'],
+            "title": id_to_text[i]['title']
+        } 
+        for i in I[0]
+    ]
     
     return related_docs
 
 def generate_response(prompt):
     related = get_related_docs(prompt, chunks)
-    formatted_related = "\n".join([f"Related: {doc}" for doc in related])
+    formatted_related = "\n".join(
+        [f"Related: {doc['content']}\nSource: {doc['file_name']} - {doc['title']}" for doc in related]
+    )
     user_message = f"Question:{prompt}\nContext:{formatted_related}"
     response = llama_model.create_chat_completion(
         messages=[

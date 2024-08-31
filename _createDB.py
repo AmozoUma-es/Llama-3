@@ -9,6 +9,7 @@ import numpy as np
 import pickle
 import argparse
 from tqdm import tqdm
+import chardet # to make encoding detection
 
 def get_normalized_embeddings(texts, tokenizer, model, device):
     inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt").to(device)
@@ -52,6 +53,26 @@ def main():
                              use_multithreading=True)
     documents = loader.load()
 
+    # Create a dictionary to map titles to the first line of each document, detected by encoding
+    titles = {}
+    file_paths = [f for f in os.listdir(args.directory_path) if f.endswith(".txt")]
+    for file_path in tqdm(file_paths, desc="Reading titles"):
+        if file_path.endswith(".txt"):
+            full_path = os.path.join(args.directory_path, file_path)
+            # Detect the encoding
+            with open(full_path, 'rb') as f:
+                raw_data = f.read(1000)  # read a portion of the file to detect the encoding
+                result = chardet.detect(raw_data)
+                encoding = result['encoding']
+            
+            # read the file with the detected encoding
+            try:
+                with open(full_path, 'r', encoding=encoding) as f:
+                    first_line = f.readline().strip()
+                titles[file_path] = first_line[:100]  # Limit the title to 100 characters
+            except UnicodeDecodeError:
+                titles[file_path] = "Error reading title by encoding detection"
+
     # Create a splitter in terms of chunk size and overlap
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=args.chunk_size,  # Chunk size in characters
@@ -69,7 +90,13 @@ def main():
     for i, doc in tqdm(enumerate(split_docs), total=len(split_docs), desc="Processing documents"):
         embeddings = get_normalized_embeddings([doc.page_content], tokenizer, model, device)
         all_embeddings.append(embeddings)
-        id_to_text[i] = doc.page_content  # Map the ID to the text
+        file_name = os.path.basename(doc.metadata['source'])
+        title = titles[file_name]
+        id_to_text[i] = {
+            'content': doc.page_content,
+            'file_name': file_name,
+            'title': title
+        }
 
     # Convert the list of embeddings into a single numpy array
     all_embeddings = np.vstack(all_embeddings)
