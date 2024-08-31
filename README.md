@@ -1,6 +1,6 @@
 # Llama-3
 
-A set of files to use Llama 3 models in different ways. I made my test using Llama 3 8B Instruct on a laptop with a 4070 8GB.
+A set of files to use Llama 3 models in different ways. I made my test using Llama 3 8B (8bit) Instruct on a laptop with a 4070 8GB.
 
 ## Project Overview
 
